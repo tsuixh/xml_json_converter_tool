@@ -17,8 +17,10 @@
  * @returns xml的Document对象
  */
 function getXmlDocumentByFilePath(xmlFilePath) {
+    //xmlDocument对象
     var xmlDoc = null;
-
+    //xmlhttp对象
+    var xmlhttp = null;
     if (window.XMLHttpRequest) {
         //IE7+, FireFox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
@@ -62,15 +64,10 @@ function convertToJSON(xmlDoc) {
     var jsonStr = "";
     var buffer = new Array();
     buffer.push("{");
-    //
     var nodeList = xmlDoc.childNodes;
-    console.info(nodeList);
     generate(nodeList);
 
     function generate(node_list) {
-        console.info(node_list);
-        console.info(node_list[0].parentNode.nodeName);
-        //buffer.push("\"" + node_list[0].parentNode.nodeName + "\": {");
 
         for (var i = 0; i < node_list.length; i++) {
             var curr_node = node_list[i];
