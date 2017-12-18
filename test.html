@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XML转JSON测试</title>
+    <script type="text/javascript" src="xml2json.js"></script>
+</head>
+<body>
+<label for="inputXml">请拷贝XML内容到此处：</label>
+<input type="text" name="inputXml" id="inputXml" placeholder="xml content">
+<input type="button" value="Convert to JSON" onclick="process(document.getElementById('inputXml').value)"><br>
+<div id="jsonPart" style="resize: both;margin-top: 10px"></div>
+<script type="text/javascript">
+    function process(xmlString) {
+        var xmlDoc = getXmlDocumentByXmlString(xmlString);
+        var json = convertToJSON(xmlDoc);
+
+        //debug
+        console.info(xmlDoc);
+        console.info(json);
+
+        document.getElementById("jsonPart").innerHTML = json;
+    }
+</script>
+</body>
+</html>
