@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="GBK"?>
+<operation_in>
+    <process_code>cc_caddvnetmemout</process_code>
+    <app_id>109000000001</app_id>
+    <access_token>ABCDE12345ABCDE12345</access_token>
+    <sign></sign>
+    <verify_code></verify_code>
+    <request_type>5001</request_type>
+    <sysfunc_id>463</sysfunc_id>
+    <operator_id></operator_id>
+    <organ_id>3001</organ_id>
+    <route_type>1</route_type>
+    <route_value>23</route_value>
+    <request_time>20161027044037</request_time>
+    <request_seq>0_1311</request_seq>
+    <request_source>102010</request_source>
+    <request_target></request_target>
+    <msg_version>0100</msg_version>
+    <cont_version>0100</cont_version>
+    <user_passwd>7089F5FD852898A6</user_passwd>
+    <operator_ip>10.33.208.83</operator_ip>
+    <login_msisdn>13773322886</login_msisdn>
+    <content>
+        <main_msisdn>13773322886</main_msisdn>
+        <sub_msisdn>13651518722</sub_msisdn>
+        <bboss_effect_type>2</bboss_effect_type>
+        <ddr_city>23</ddr_city>
+        <package_code>2000005873</package_code>
+    </content>
+    <channelid>4</channelid>
+</operation_in>

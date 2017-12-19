@@ -13,14 +13,16 @@
 
 /**
  * 通过传入xml文件路径来解析xml文档
- * @param xmlFilePath xml文档路径，如：files/test.xml
- * @returns xml的Document对象
+ * @param {string} xmlFilePath xml文档路径，如：files/test.xml
+ * @returns {Document} xml的Document对象
+ * @throws XML Format Error
  */
 function getXmlDocumentByFilePath(xmlFilePath) {
     //xmlDocument对象
-    var xmlDoc = null;
+    var xmlDoc;
     //xmlhttp对象
     var xmlhttp = null;
+
     if (window.XMLHttpRequest) {
         //IE7+, FireFox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
@@ -32,37 +34,86 @@ function getXmlDocumentByFilePath(xmlFilePath) {
     xmlhttp.open("GET", xmlFilePath, false);
     xmlhttp.send();
     xmlDoc = xmlhttp.responseXML;
-    return xmlDoc;
+
+    //XML校验
+    var validateResult = {};
+    validateResult.result = false;
+    validateResult.message = "";
+
+    if (xmlDoc) {
+        validateResult.result = true;
+        validateResult.message = "success";
+    } else {
+        validateResult.message = "XML format error, please check again";
+    }
+
+    //if (xmlhttp.readyState == 4) {
+    //    if (xmlhttp.status == 200) {
+    //
+    //
+    //    } else {
+    //        validateResult.result = false;
+    //        validateResult.message = "接收http响应失败";
+    //    }
+    //} else {
+    //    validateResult.result = false;
+    //    validateResult.message = "xml请求失败";
+    //}
+
+
+    //if (type == "ie") {
+    //    validateResult = validateXMLForIE(xmlDoc);
+    //} else if (type == "others") {
+    //    validateResult = validateXmlForOthers(xmlDoc);
+    //}
+
+    if (validateResult.result) {
+        return xmlDoc;
+    } else {
+        throw "XML format error : " + validateResult.message;
+    }
 }
 
 /**
  * 通过传入xml的内容字符串来解析xml
- * @param xmlString xml字符串
- * @returns xml的Document对象
+ * @param {string} xmlString xml字符串
+ * @returns {Document} xml的Document对象
+ * @throws XML Format Error
  */
 function getXmlDocumentByXmlString(xmlString) {
     var xmlDoc = null;
+    var validateResult = null;
+
     if (window.DOMParser) {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        validateResult = validateXmlForOthers(xmlDoc);
     } else {
         //IE
         xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
         xmlDoc.async = "false";
         xmlDoc.loadXML(xmlString);
+        validateResult = validateXMLForIE(xmlDoc);
     }
-    return xmlDoc;
+
+    if (validateResult.result) {
+        return xmlDoc;
+    } else {
+        throw "XML format error :" + validateResult.message;
+    }
+
+
 }
 
 /**
  * 将XML的Document对象转换为JSON字符串
- * @param xmlDoc xml的Document对象
- * @return string
+ * @param {Document} xmlDoc xml的Document对象
+ * @return {string} JSON string
  */
 function convertToJSON(xmlDoc) {
     //准备JSON字符串和缓存（提升性能）
-    var jsonStr = "";
-    var buffer = new Array();
+    var jsonStr;
+    var buffer = [];
 
     buffer.push("{");
     //获取xml文档的所有子节点
@@ -110,4 +161,53 @@ function convertToJSON(xmlDoc) {
 
     jsonStr = buffer.join("");
     return jsonStr;
+}
+/**
+ * 基于IE浏览器的XML格式验证器
+ * @param xmlDoc 通过IE浏览器解析的xmlDoc对象
+ * @returns {Object} 返回result对象，包含两个字段：(boolean)result, {string}message
+ * result代表验证结果，true则为通过验证。
+ * message包含错误信息，当验证未通过时返回错误信息，验证通过则为success
+ */
+function validateXMLForIE(xmlDoc) {
+
+    var result = {};
+    result.result = false;
+    result.message = null;
+
+    //IE浏览器
+    if (xmlDoc.parseError.errorCode != 0) {
+        var message = "error code : " + xmlDoc.parseError.errorCode + "\n";
+        message += "caused by : " + xmlDoc.parseError.reason + "\n";
+        message += "at line : " + xmlDoc.parseError.line + "\n";
+        result.result = false;
+        result.message = message;
+    } else {
+        result.result = true;
+        result.message = "success";
+    }
+    return result;
+}
+/**
+ * 基于其他浏览器（不包括IE）的XML格式验证器
+ * @param {Document} xmlDoc
+ * @returns {result}
+ */
+function validateXmlForOthers(xmlDoc) {
+    var result = {};
+    result.result = false;
+    result.message = null;
+
+    var error = xmlDoc.getElementsByTagName("parsererror");
+    if (error.length > 0) {
+        if (xmlDoc.documentElement.nodeName == "parsererror") {
+            result.message = xmlDoc.documentElement.childNodes[0].nodeValue;
+        } else {
+            result.message = xmlDoc.getElementsByTagName("parsererror")[0].innerHTML;
+        }
+        result.result = false;
+    } else {
+        result.result = true;
+        result.message = "success";
+    }
 }

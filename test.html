@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>XML转JSON测试</title>
     <script type="text/javascript" src="xml2json.js"></script>
+    <script type="text/javascript" src="xmlParser.js"></script>
 </head>
 <body>
 <label for="inputXml">请拷贝XML内容到此处：</label>
@@ -11,8 +12,15 @@
 <input type="button" value="Convert to JSON" onclick="process(document.getElementById('inputXml').value)"><br>
 <div id="jsonPart" style="resize: both;margin-top: 10px"></div>
 <script type="text/javascript">
+    var xmlDoc = getXmlDocumentByFilePath("test.xml");
+    //    var xmlDoc;
     function process(xmlString) {
-        var xmlDoc = getXmlDocumentByXmlString(xmlString);
+        try {
+            xmlDoc = getXmlDocumentByXmlString(xmlString);
+        } catch (error) {
+            console.warn("XML格式不正确，请检查XML格式重新输入");
+            return;
+        }
         var json = convertToJSON(xmlDoc);
 
         //debug
@@ -21,6 +29,12 @@
 
         document.getElementById("jsonPart").innerHTML = json;
     }
+
+    var callback = function (currNode, value, recursiveLevel) {
+        console.info(currNode.nodeName + " : " + value + "--- RecursiveLevel : " + recursiveLevel);
+    };
+
+    traversalXml(xmlDoc, callback);
 </script>
 </body>
 </html>
